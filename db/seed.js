@@ -5,10 +5,10 @@ const Comment = require('../lib/models/Comment');
 
 
 module.exports = async({ users = 20, posts = 100, comment = 500 } = {}) => {
-  const createdUsers = await User.create([...Array(users)].map(() => ({
-    username: chance.name(),
+  const createdUsers = await User.create([...Array(users)].map((_, i) => ({
+    username: `user${i}`,
     profilePhotoUrl: chance.url(),
-    password: chance.word()
+    password: `password${i}`
   })));
   const createdPosts = await Post.create([...Array(posts)].map(() => ({
     user: chance.pickone(createdUsers).id,

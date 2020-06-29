@@ -4,7 +4,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongod = new MongoMemoryServer();
 const mongoose = require('mongoose');
 const connect = require('../lib/utils/connect');
-//const seed = require('./seed');
+const seed = require('./seed');
 
 const request = require('supertest');
 const app = require('../lib/app');
@@ -19,17 +19,17 @@ beforeEach(() => {
   return mongoose.connection.dropDatabase();
 });
 
-// beforeEach(() => {
-//   return seed();
-// });
+beforeEach(() => {
+  return seed();
+});
 
 const agent = request.agent(app);
 beforeEach(() => {
   return agent
     .post('/api/v1/auth/login')
     .send({
-      email: 'test0@test.com',
-      password: 'password'
+      username: 'user0',
+      password: 'password0'
     });
 });
 
@@ -46,7 +46,7 @@ const prepare = model => {
   return prepareOne(model);
 };
 
-const getLoggedInUser = () => User.findOne({ email: 'test0@test.com' });
+const getLoggedInUser = () => User.findOne({ username: 'user0' });
 
 module.exports = {
   agent,
