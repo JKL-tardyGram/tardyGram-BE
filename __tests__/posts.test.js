@@ -4,6 +4,7 @@ const request = require('supertest');
 const app = require('../lib/app');
 const Post = require('../lib/models/Post.js');
 
+
 describe('post routes', () => {
     
   it('it makes a new post with POST', async() => {
@@ -41,7 +42,8 @@ describe('post routes', () => {
   });
 
   it('it gets a post by id with GET', async() => {
-    const post = prepare(await Post.findOne());
+    const post = prepare(await Post.findOne()
+      .populate('comments'));
 
     return agent
       .get(`/api/v1/posts/${post._id}`)
@@ -51,7 +53,8 @@ describe('post routes', () => {
   });
 
   it('it updates the post caption with PATCH', async() => {
-    const post = prepare(await Post.findOne());
+    const user = await getLoggedInUser();
+    const post = prepare(await Post.findOne({ user: user._id }));
 
     return agent
       .patch(`/api/v1/posts/${post._id}`)
@@ -70,6 +73,17 @@ describe('post routes', () => {
           'user': expect.anything(),
                  
         });
+      });
+  });
+
+  it('it deletes a post with DELETE', async() => {
+    const user = await getLoggedInUser();
+    const post = prepare(await Post.findOne({ user: user._id }));
+
+    return agent
+      .delete(`/api/v1/posts/${post._id}`)
+      .then(res => {
+        expect(res.body). toEqual(post);
       });
   });
 });
