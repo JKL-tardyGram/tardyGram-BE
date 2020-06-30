@@ -1,7 +1,4 @@
 const { agent, prepare, getLoggedInUser } = require('../db/data-helpers.js');
-const User = require('../lib/models/User');
-const request = require('supertest');
-const app = require('../lib/app');
 const Post = require('../lib/models/Post.js');
 
 
@@ -85,5 +82,16 @@ describe('post routes', () => {
       .then(res => {
         expect(res.body). toEqual(post);
       });
+  });
+
+  it('gets 10 popular posts with comments', async() => {
+    const posts = prepare(await Post.getTopPosts());
+
+    return agent
+      .get('/api/v1/posts/analytics/popular')
+      .then(res => {
+        expect(res.body).toEqual(posts);
+      });
+
   });
 });
